@@ -1,7 +1,11 @@
 var generateNode = function() {
-  this.set = function(nodes, svg, styles) {
+  this.set = function(drawEntities, svg, styles) {
+    let nodes = drawEntities.nodes;
     nodes.map((node, index) => {
-      this.draw(svg, node.x, node.y, node.uniqid, styles);
+      let currentStyle;
+      if (node.style !== undefined) currentStyle = styles[node.style];
+      else currentStyle = styles.node;
+      this.draw(svg, node.x, node.y, node.uniqid, currentStyle);
     });
   };
 
@@ -19,3 +23,5 @@ var generateNode = function() {
     svg.appendChild(currentNode);
   };
 };
+
+export { generateNode };

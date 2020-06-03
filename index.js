@@ -1,12 +1,22 @@
-var svgRenderer = function(svg) {
-  this.draw = function(svg, nodes, edges, styles) {
-    generateLine = new generateCurve();
-    generateLine.set(edges, svg, styles.edge);
+import { generateCurve } from './plugins/edges/curve';
+import { generateLine } from './plugins/edges/line';
+import { generateNode } from './plugins/nodes/index';
+import { generateLabel } from './plugins/labels/index';
 
-    generateNode = new generateNode();
-    generateNode.set(nodes, svg, styles.node);
+var svgRenderer = function() {
+  this.draw = function(drawEntities, svg, styles) {
+    let generateLin = new generateLine();
+    generateLin.set(drawEntities, svg, styles);
 
-    generateLabel = new generateLabel();
-    generateLabel.set(nodes, svg, styles.node);
+    let generateCur = new generateCurve();
+    generateCur.set(drawEntities, svg, styles);
+
+    let generateNod = new generateNode();
+    generateNod.set(drawEntities, svg, styles);
+
+    let generateLab = new generateLabel();
+    generateLab.set(drawEntities, svg, styles);
   };
 };
+
+export { svgRenderer };

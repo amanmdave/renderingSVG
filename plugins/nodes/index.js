@@ -2,11 +2,19 @@ var generateNode = function() {
   this.set = function(drawEntities, svg, styles) {
     let nodes = drawEntities.nodes;
     nodes.map((node, index) => {
-      let currentStyle;
-      if (node.style !== undefined) currentStyle = styles[node.style];
-      else currentStyle = styles.node;
+      let currentStyle = this.updateStyles(node, styles);
+
       this.draw(svg, node.x, node.y, node.uniqid, currentStyle);
     });
+  };
+
+  // FUNCTION: checks if the node has individual styles
+  this.updateStyles = function(node, styles) {
+    let currentStyle;
+    if (node.style !== undefined) currentStyle = styles[node.style];
+    else currentStyle = styles.node;
+
+    return currentStyle;
   };
 
   this.draw = function(svg, x, y, id, styles) {

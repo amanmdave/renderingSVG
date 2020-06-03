@@ -2,11 +2,19 @@ var generateLabel = function() {
   this.set = function(drawEntities, svg, styles) {
     let nodes = drawEntities.nodes;
     nodes.map((node, index) => {
-      let currentStyle;
-      if (node.style !== undefined) currentStyle = styles[node.style];
-      else currentStyle = styles.node;
-      this.draw(svg, node.x, node.y, node.uniqid, currentStyle);
+      let currentStyle = this.updateStyles(node, styles);
+
+      this.draw(svg, node.x, node.y, node.label, currentStyle);
     });
+  };
+
+  // FUNCTION: checks if the node has individual styles
+  this.updateStyles = function(node, styles) {
+    let currentStyle;
+    if (node.style !== undefined) currentStyle = styles[node.style];
+    else currentStyle = styles.node;
+
+    return currentStyle;
   };
 
   this.draw = function(svg, x, y, label, styles) {
@@ -16,9 +24,11 @@ var generateLabel = function() {
       'http://www.w3.org/2000/svg',
       'text'
     );
-    currentLabel.setAttributeNS(null, 'x', x + 5);
-    currentLabel.setAttributeNS(null, 'y', y - 2);
-    currentLabel.setAttributeNS(null, 'fill', styles.color || 'black');
+    const labelColor =
+      styles.label && styles.label.color ? styles.label.color : 'black';
+    currentLabel.setAttributeNS(null, 'x', x + styles.radius);
+    currentLabel.setAttributeNS(null, 'y', y - styles.radius);
+    currentLabel.setAttributeNS(null, 'fill', labelColor);
     var txt = document.createTextNode(label);
     currentLabel.appendChild(txt);
     svg.appendChild(currentLabel);

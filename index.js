@@ -5,6 +5,7 @@ import { generateLabel } from './plugins/labels/index';
 
 var svgRenderer = function() {
   this.draw = function(drawEntities, svg, styles) {
+    console.log(drawEntities);
     let generateLin = new generateLine();
     generateLin.set(drawEntities, svg, styles);
 

@@ -4,21 +4,19 @@ var generateCircle = function() {
   this.set = function(drawEntities, svg, styles) {
     let edges = drawEntities.circles;
     edges.map((edge, index) => {
-      const source = geomutils.edgeSource(edge);
+      //   const edgeShift = geomutils.getCurveShift(edge);
+      //   const source = geomutils.edgeSource(edge);
       const target = geomutils.edgeTarget(edge);
-      const edgeShift = geomutils.getCurveShift(edge);
+      const targetIndex = target.index;
 
       let currentStyle = this.updateStyles(drawEntities, edge, target, styles);
 
       this.draw(
         svg,
-        source.x,
-        source.y,
-        source.uniqid,
         target.x,
         target.y,
-        target.uniqid,
         edge.uniqid,
+        targetIndex,
         currentStyle
       );
     });
@@ -35,7 +33,8 @@ var generateCircle = function() {
 
     // extract the target node's style
     let targetNodeStyle;
-    if (targetNode.style !== undefined)
+
+    if (targetNode && targetNode.style !== undefined)
       targetNodeStyle = styles[targetNode.style];
     else targetNodeStyle = styles.node;
 
@@ -45,27 +44,28 @@ var generateCircle = function() {
     else currentStyle = styles.edge;
 
     // update the current edge stlye
-    currentStyle.targetNodeRadius = targetNodeRadius;
+    if (target.index === undefined) currentStyle.targetNodeRadius = 1;
+    else currentStyle.targetNodeRadius = targetNodeRadius;
 
     return currentStyle;
   };
 
   // FUNCTION: Draws individual edges
-  this.draw = function(svg, x1, y1, si, x2, y2, ti, id, styles) {
-    x1 = x1 * 500;
-    y1 = y1 * 500;
-    x2 = x2 * 500;
-    y2 = y2 * 500;
-
-    let crx = x1 - 75;
-    let clx = x2 + 75;
+  this.draw = function(svg, x, y, id, targetIndex, styles) {
+    x = x * 500;
+    y = y * 500;
+    let crx = x - 75;
+    let clx = x + 75;
     let cy;
 
     // Checks the midpoint of the canvas, and draws circle depending upon
     // whether it is in top half (=> add 100 to draw circle bottom-down)
     // or bottom half (=> subtracts 100 to draw circle bottom-up)
-    if (y1 < 250) cy = y1 + 75;
-    else cy = y1 - 75;
+    if (y < 250) cy = y + 75;
+    else cy = y - 75;
+
+    let bP = this.getCurveBoundary(x, y, clx, cy, crx, cy, x, y);
+    // console.log(bP);
 
     // EXTRA -> If circle cross the 500x500 canvas horizontally
     // ==> Checks if it crossing any horizontal boundries
@@ -73,12 +73,17 @@ var generateCircle = function() {
     // else crx = x1 - 100;
     // if (x2 + 100 > 500) clx = 500;
     // else clx = x2 + 100;
+    if (targetIndex !== undefined) {
+      y = y + bP.height;
+      if (y < 250) cy = y + 75;
+      else cy = y - 75;
+    }
 
     let curve =
       'M' +
-      x1 +
+      x +
       ',' +
-      y1 +
+      y +
       ' C' +
       crx +
       ',' +
@@ -88,9 +93,9 @@ var generateCircle = function() {
       ',' +
       cy +
       ' ' +
-      x2 +
+      x +
       ',' +
-      y2;
+      y;
 
     let currentCircle = document.createElementNS(
       'http://www.w3.org/2000/svg',
@@ -146,7 +151,83 @@ var generateCircle = function() {
 
     return defs;
   };
+  this.getCurveBoundary = function(ax, ay, bx, by, cx, cy, dx, dy) {
+    var tobx = bx - ax;
+    var toby = by - ay;
+    var tocx = cx - bx;
+    var tocy = cy - by;
+    var todx = dx - cx;
+    var tody = dy - cy;
+    var step = 1 / 40; // precission
+    var d,
+      px,
+      py,
+      qx,
+      qy,
+      rx,
+      ry,
+      tx,
+      ty,
+      sx,
+      sy,
+      x,
+      y,
+      i,
+      minx,
+      miny,
+      maxx,
+      maxy;
+    function min(num1, num2) {
+      if (num1 > num2) return num2;
+      if (num1 < num2) return num1;
+      return num1;
+    }
+    function max(num1, num2) {
+      if (num1 > num2) return num1;
+      if (num1 < num2) return num2;
+      return num1;
+    }
+    for (var i = 0; i < 41; i++) {
+      d = i * step;
+      px = ax + d * tobx;
+      py = ay + d * toby;
+      qx = bx + d * tocx;
+      qy = by + d * tocy;
+      rx = cx + d * todx;
+      ry = cy + d * tody;
+      let toqx = qx - px;
+      let toqy = qy - py;
+      let torx = rx - qx;
+      let tory = ry - qy;
 
+      sx = px + d * toqx;
+      sy = py + d * toqy;
+      tx = qx + d * torx;
+      ty = qy + d * tory;
+      let totx = tx - sx;
+      let toty = ty - sy;
+
+      x = sx + d * totx;
+      y = sy + d * toty;
+      if (i == 0) {
+        minx = x;
+        miny = y;
+        maxx = x;
+        maxy = y;
+      } else {
+        minx = min(minx, x);
+        miny = min(miny, y);
+        maxx = max(maxx, x);
+        maxy = max(maxy, y);
+      }
+    }
+    return {
+      x: Math.round(minx),
+      y: Math.round(miny),
+      width: Math.round(maxx - minx),
+      height: Math.round(maxy - miny),
+    };
+  };
   //   this.curvePoint = function(x1, x2, y1, y2, dis) {
   //     // TODO: Try if the curvature can be defined from here
   //     let originalSlope = (y2 - y1) / (x2 - x1);

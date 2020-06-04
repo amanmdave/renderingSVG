@@ -38,7 +38,7 @@ var generateCurve = function() {
 
     // extract the target node's style
     let targetNodeStyle;
-    if (targetNode.style !== undefined)
+    if (targetNode && targetNode.style !== undefined)
       targetNodeStyle = styles[targetNode.style];
     else targetNodeStyle = styles.node;
 

@@ -33,7 +33,7 @@ var generateLine = function() {
 
     // extract the target edge's individualstyle if present
     let targetNodeStyle;
-    if (targetNode.style !== undefined)
+    if (targetNode && targetNode.style !== undefined)
       targetNodeStyle = styles[targetNode.style];
     else targetNodeStyle = styles.node;
 

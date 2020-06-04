@@ -1,4 +1,5 @@
 import geomutils from '../../../geomutils';
+import { generateNode } from '../nodes';
 
 var generateCurve = function() {
   this.set = function(drawEntities, svg, styles) {
@@ -71,13 +72,17 @@ var generateCurve = function() {
     else dis = 40;
 
     // TODO: see if function curvePoint helps in anyway
-    // let roundness = this.curvePoint(x1, x2, y1, y1, dis);
-    // ex = roundness.x
-    // ey = roundness.y
+    let roundness = this.curvePoint(x1, x2, y1, y2, dis);
+    ex = roundness.cx;
+    ey = roundness.cy;
+
+    // console.log({ x, y });
+    // console.log(roundness);
     // var curve =
     //   'M' + x1 + ' ' + y1 + ' Q ' + ex + ' ' + ey + ' ' + x2 + ' ' + y2;
 
-    let curve = 'M' + x1 + ' ' + y1 + ' Q ' + x + ' ' + y + ' ' + x2 + ' ' + y2;
+    let curve =
+      'M' + x1 + ' ' + y1 + ' Q ' + ex + ' ' + ey + ' ' + x2 + ' ' + y2;
 
     let currentCurve = document.createElementNS(
       'http://www.w3.org/2000/svg',
@@ -147,8 +152,8 @@ var generateCurve = function() {
     let dx = x2 - x1;
     let dy = y2 - y1;
 
-    let cx = -dy;
-    let cy = dx;
+    let cx = -dy / 6;
+    let cy = dx / 6;
 
     cx = x + cx;
     cy = y + cy;

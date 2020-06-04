@@ -7,18 +7,11 @@ var generateCircle = function() {
       //   const edgeShift = geomutils.getCurveShift(edge);
       //   const source = geomutils.edgeSource(edge);
       const target = geomutils.edgeTarget(edge);
-      const targetIndex = target.index;
+      console.log(target);
 
       let currentStyle = this.updateStyles(drawEntities, edge, target, styles);
 
-      this.draw(
-        svg,
-        target.x,
-        target.y,
-        edge.uniqid,
-        targetIndex,
-        currentStyle
-      );
+      this.draw(svg, target.x, target.y, edge, currentStyle);
     });
   };
 
@@ -47,11 +40,12 @@ var generateCircle = function() {
     if (target.index === undefined) currentStyle.targetNodeRadius = 1;
     else currentStyle.targetNodeRadius = targetNodeRadius;
 
+    // console.log(currentStyle);
     return currentStyle;
   };
 
   // FUNCTION: Draws individual edges
-  this.draw = function(svg, x, y, id, targetIndex, styles) {
+  this.draw = function(svg, x, y, edge, styles) {
     x = x * 500;
     y = y * 500;
     let crx = x - 75;
@@ -73,7 +67,7 @@ var generateCircle = function() {
     // else crx = x1 - 100;
     // if (x2 + 100 > 500) clx = 500;
     // else clx = x2 + 100;
-    if (targetIndex !== undefined) {
+    if (edge.weight !== undefined) {
       y = y + bP.height;
       if (y < 250) cy = y + 75;
       else cy = y - 75;
@@ -106,7 +100,7 @@ var generateCircle = function() {
     currentCircle.setAttribute('stroke-width', styles.width || 1);
     currentCircle.setAttribute('fill', 'none');
 
-    let defs = this.addArrowHead(currentCircle, styles, id);
+    let defs = this.addArrowHead(currentCircle, styles, edge.uniqid);
 
     svg.append(defs);
     svg.append(currentCircle);

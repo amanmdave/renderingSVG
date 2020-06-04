@@ -1,8 +1,8 @@
 import geomutils from '../../../geomutils';
 
-var generateCurve = function() {
+var generateCircle = function() {
   this.set = function(drawEntities, svg, styles) {
-    let edges = drawEntities.curves;
+    let edges = drawEntities.circles;
     edges.map((edge, index) => {
       const source = geomutils.edgeSource(edge);
       const target = geomutils.edgeTarget(edge);
@@ -18,8 +18,6 @@ var generateCurve = function() {
         target.x,
         target.y,
         target.uniqid,
-        edgeShift.x,
-        edgeShift.y,
         edge.uniqid,
         currentStyle
       );
@@ -53,45 +51,60 @@ var generateCurve = function() {
   };
 
   // FUNCTION: Draws individual edges
-  this.draw = function(svg, x1, y1, si, x2, y2, ti, ex, ey, id, styles) {
-    // console.log(styles);
+  this.draw = function(svg, x1, y1, si, x2, y2, ti, id, styles) {
     x1 = x1 * 500;
     y1 = y1 * 500;
     x2 = x2 * 500;
     y2 = y2 * 500;
-    ex = ex * 500;
-    ey = ey * 500;
-    let x = (x1 + x2) / 2;
-    let y;
-    if (si < ti) y = (y1 + y2) / 2 - 40;
-    else y = (y1 + y2) / 2 + 40;
 
-    let dis;
-    if (si < ti) dis = -40;
-    else dis = 40;
+    let crx = x1 - 75;
+    let clx = x2 + 75;
+    let cy;
 
-    // TODO: see if function curvePoint helps in anyway
-    // let roundness = this.curvePoint(x1, x2, y1, y1, dis);
-    // ex = roundness.x
-    // ey = roundness.y
-    // var curve =
-    //   'M' + x1 + ' ' + y1 + ' Q ' + ex + ' ' + ey + ' ' + x2 + ' ' + y2;
+    // Checks the midpoint of the canvas, and draws circle depending upon
+    // whether it is in top half (=> add 100 to draw circle bottom-down)
+    // or bottom half (=> subtracts 100 to draw circle bottom-up)
+    if (y1 < 250) cy = y1 + 75;
+    else cy = y1 - 75;
 
-    let curve = 'M' + x1 + ' ' + y1 + ' Q ' + x + ' ' + y + ' ' + x2 + ' ' + y2;
+    // EXTRA -> If circle cross the 500x500 canvas horizontally
+    // ==> Checks if it crossing any horizontal boundries
+    // if (x1 - 100 < 0) crx = 0;
+    // else crx = x1 - 100;
+    // if (x2 + 100 > 500) clx = 500;
+    // else clx = x2 + 100;
 
-    let currentCurve = document.createElementNS(
+    let curve =
+      'M' +
+      x1 +
+      ',' +
+      y1 +
+      ' C' +
+      crx +
+      ',' +
+      cy +
+      ' ' +
+      clx +
+      ',' +
+      cy +
+      ' ' +
+      x2 +
+      ',' +
+      y2;
+
+    let currentCircle = document.createElementNS(
       'http://www.w3.org/2000/svg',
       'path'
     );
-    currentCurve.setAttribute('d', curve);
-    currentCurve.setAttribute('stroke', styles.color || 'rgb(204, 204, 204)');
-    currentCurve.setAttribute('stroke-width', styles.width || 1);
-    currentCurve.setAttribute('fill', 'none');
+    currentCircle.setAttribute('d', curve);
+    currentCircle.setAttribute('stroke', styles.color || 'rgb(204, 204, 204)');
+    currentCircle.setAttribute('stroke-width', styles.width || 1);
+    currentCircle.setAttribute('fill', 'none');
 
-    let defs = this.addArrowHead(currentCurve, styles, id);
+    let defs = this.addArrowHead(currentCircle, styles, id);
 
     svg.append(defs);
-    svg.append(currentCurve);
+    svg.append(currentCircle);
   };
 
   // FUNCTION: Adds the arrow at the end of the line
@@ -134,40 +147,40 @@ var generateCurve = function() {
     return defs;
   };
 
-  this.curvePoint = function(x1, x2, y1, y2, dis) {
-    // TODO: Try if the curvature can be defined from here
-    let originalSlope = (y2 - y1) / (x2 - x1);
-    let m;
-    if (originalSlope === 0) m = Number.MAX_SAFE_INTEGER;
-    else m = -1 / originalSlope;
+  //   this.curvePoint = function(x1, x2, y1, y2, dis) {
+  //     // TODO: Try if the curvature can be defined from here
+  //     let originalSlope = (y2 - y1) / (x2 - x1);
+  //     let m;
+  //     if (originalSlope === 0) m = Number.MAX_SAFE_INTEGER;
+  //     else m = -1 / originalSlope;
 
-    let x = (x1 + x2) / 2;
-    let y = (y1 + y2) / 2;
+  //     let x = (x1 + x2) / 2;
+  //     let y = (y1 + y2) / 2;
 
-    let dx = x2 - x1;
-    let dy = y2 - y1;
+  //     let dx = x2 - x1;
+  //     let dy = y2 - y1;
 
-    let cx = -dy;
-    let cy = dx;
+  //     let cx = -dy;
+  //     let cy = dx;
 
-    cx = x + cx;
-    cy = y + cy;
+  //     cx = x + cx;
+  //     cy = y + cy;
 
-    // if (m === 0) {
-    //   cx = x + dis;
-    //   cy = y;
-    // } else if (m === Number.MAX_SAFE_INTEGER) {
-    //   cx = x;
-    //   cy = y + dis;
-    // } else {
-    //   let dx = dis / Math.sqrt(1 + m * m);
-    //   let dy = m * dx;
-    //   cx = x + dx;
-    //   cy = y + dy;
-    // }
+  //     // if (m === 0) {
+  //     //   cx = x + dis;
+  //     //   cy = y;
+  //     // } else if (m === Number.MAX_SAFE_INTEGER) {
+  //     //   cx = x;
+  //     //   cy = y + dis;
+  //     // } else {
+  //     //   let dx = dis / Math.sqrt(1 + m * m);
+  //     //   let dy = m * dx;
+  //     //   cx = x + dx;
+  //     //   cy = y + dy;
+  //     // }
 
-    return { cx, cy };
-  };
+  //     return { cx, cy };
+  //   };
 };
 
-export { generateCurve };
+export { generateCircle };

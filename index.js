@@ -1,5 +1,6 @@
-import { generateCurve } from './plugins/edges/curve';
 import { generateLine } from './plugins/edges/line';
+import { generateCurve } from './plugins/edges/curve';
+import { generateCircle } from './plugins/edges/circle';
 import { generateNode } from './plugins/nodes/index';
 import { generateLabel } from './plugins/labels/index';
 
@@ -11,6 +12,9 @@ var svgRenderer = function() {
 
     let generateCur = new generateCurve();
     generateCur.set(drawEntities, svg, styles);
+
+    let generateCir = new generateCircle();
+    generateCir.set(drawEntities, svg, styles);
 
     let generateNod = new generateNode();
     generateNod.set(drawEntities, svg, styles);

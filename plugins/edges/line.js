@@ -99,7 +99,7 @@ var generateLine = function() {
     marker.setAttribute('id', arrowId);
     marker.setAttribute(
       'refX',
-      arrowSize - arrowSize / 6 + styles.targetNodeRadius
+      arrowSize - arrowSize / 6 + (styles.targetNodeRadius || 5) // BUG: If node is an image, it would mislocate
     ); // TODO: this is trial and error and needs to be redefined
     marker.setAttribute('refY', arrowSize / 2);
     marker.setAttribute('orient', 'auto');

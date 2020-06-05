@@ -7,7 +7,7 @@ var generateCircle = function() {
       //   const edgeShift = geomutils.getCurveShift(edge);
       //   const source = geomutils.edgeSource(edge);
       const target = geomutils.edgeTarget(edge);
-      console.log(target);
+      //   console.log(target);
 
       let currentStyle = this.updateStyles(drawEntities, edge, target, styles);
 
@@ -58,8 +58,7 @@ var generateCircle = function() {
     if (y < 250) cy = y + 75;
     else cy = y - 75;
 
-    let bP = this.getCurveBoundary(x, y, clx, cy, crx, cy, x, y);
-    // console.log(bP);
+    let circleBoundaries = this.getCurveBoundary(x, y, clx, cy, crx, cy, x, y);
 
     // EXTRA -> If circle cross the 500x500 canvas horizontally
     // ==> Checks if it crossing any horizontal boundries
@@ -68,9 +67,13 @@ var generateCircle = function() {
     // if (x2 + 100 > 500) clx = 500;
     // else clx = x2 + 100;
     if (edge.weight !== undefined) {
-      y = y + bP.height;
-      if (y < 250) cy = y + 75;
-      else cy = y - 75;
+      if (y < 250) {
+        y = y + circleBoundaries.height;
+        cy = y + 75;
+      } else {
+        y = y - circleBoundaries.height;
+        cy = y - 75;
+      }
     }
 
     let curve =
@@ -131,7 +134,7 @@ var generateCircle = function() {
     marker.setAttribute('id', arrowId);
     marker.setAttribute(
       'refX',
-      arrowSize - arrowSize / 6 + styles.targetNodeRadius
+      arrowSize - arrowSize / 6 + (styles.targetNodeRadius || 5) // BUG: If node is an image, it would mislocate
     ); // TODO: this is trial and error and needs to be redefined
     marker.setAttribute('refY', arrowSize / 2);
     marker.setAttribute('orient', 'auto');

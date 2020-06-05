@@ -124,7 +124,7 @@ var generateCurve = function() {
     marker.setAttribute('id', arrowId);
     marker.setAttribute(
       'refX',
-      arrowSize - arrowSize / 6 + styles.targetNodeRadius
+      arrowSize - arrowSize / 6 + (styles.targetNodeRadius || 5) // BUG: If node is an image, it would mislocate
     ); // TODO: this is trial and error and needs to be redefined
     marker.setAttribute('refY', arrowSize / 2);
     marker.setAttribute('orient', 'auto');
@@ -155,6 +155,7 @@ var generateCurve = function() {
     let cx = -dy / 6;
     let cy = dx / 6;
 
+    console.log({ dx, dy, cx, cy });
     cx = x + cx;
     cy = y + cy;
 

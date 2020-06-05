@@ -1,3 +1,4 @@
+import { utilsFunction } from './plugins/utils';
 import { generateLine } from './plugins/edges/line';
 import { generateCurve } from './plugins/edges/curve';
 import { generateCircle } from './plugins/edges/circle';

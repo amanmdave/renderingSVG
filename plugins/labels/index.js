@@ -26,8 +26,8 @@ var generateLabel = function() {
     );
     const labelColor =
       styles.label && styles.label.color ? styles.label.color : 'black';
-    currentLabel.setAttributeNS(null, 'x', x + styles.radius);
-    currentLabel.setAttributeNS(null, 'y', y - styles.radius);
+    currentLabel.setAttributeNS(null, 'x', x + styles.radius / 2);
+    currentLabel.setAttributeNS(null, 'y', y + styles.radius);
     currentLabel.setAttributeNS(null, 'fill', labelColor);
     var txt = document.createTextNode(label);
     currentLabel.appendChild(txt);

@@ -42,6 +42,10 @@ var generateLine = function() {
     if (edge.style !== undefined) currentStyle = styles[edge.style];
     else currentStyle = styles.edge;
 
+    // check if the node has custom style
+    if (targetNodeStyle.texture !== undefined)
+      targetNodeRadius -= targetNodeRadius / 2;
+
     // update the current edge stlye
     currentStyle.targetNodeRadius = targetNodeRadius;
 
@@ -99,7 +103,7 @@ var generateLine = function() {
     marker.setAttribute('id', arrowId);
     marker.setAttribute(
       'refX',
-      arrowSize - arrowSize / 6 + (styles.targetNodeRadius || 5) // BUG: If node is an image, it would mislocate
+      arrowSize - arrowSize / 6 + (styles.targetNodeRadius || 5)
     ); // TODO: this is trial and error and needs to be redefined
     marker.setAttribute('refY', arrowSize / 2);
     marker.setAttribute('orient', 'auto');

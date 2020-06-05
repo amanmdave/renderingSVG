@@ -26,7 +26,6 @@ var generateCircle = function() {
 
     // extract the target node's style
     let targetNodeStyle;
-
     if (targetNode && targetNode.style !== undefined)
       targetNodeStyle = styles[targetNode.style];
     else targetNodeStyle = styles.node;
@@ -35,6 +34,10 @@ var generateCircle = function() {
     let targetNodeRadius = targetNodeStyle.radius;
     if (edge.style !== undefined) currentStyle = styles[edge.style];
     else currentStyle = styles.edge;
+
+    // check if the node has custom style
+    if (targetNodeStyle.texture !== undefined)
+      targetNodeRadius -= targetNodeRadius / 2;
 
     // update the current edge stlye
     if (target.index === undefined) currentStyle.targetNodeRadius = 1;
@@ -134,7 +137,7 @@ var generateCircle = function() {
     marker.setAttribute('id', arrowId);
     marker.setAttribute(
       'refX',
-      arrowSize - arrowSize / 6 + (styles.targetNodeRadius || 5) // BUG: If node is an image, it would mislocate
+      arrowSize - arrowSize / 6 + (styles.targetNodeRadius || 5)
     ); // TODO: this is trial and error and needs to be redefined
     marker.setAttribute('refY', arrowSize / 2);
     marker.setAttribute('orient', 'auto');
